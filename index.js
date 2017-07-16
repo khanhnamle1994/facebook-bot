@@ -107,3 +107,41 @@ bot.hear(['hello', 'hey', 'sup'], (payload, chat)=>{
     chat.say(`Hey ${user.first_name}, How are you today?`)
   })
 })
+
+bot.hear('config', (payload, chat) => {
+  if(JSON.stringify(config.bucket) === undefined){
+    chat.say("No config found :/ Be sure to run 'setup' to add your bucket details")
+  }
+  chat.say("A config has been found :) "+ JSON.stringify(config.bucket))
+})
+
+bot.hear('create', (payload, chat) => {
+  chat.conversation((convo) => {
+    // Inside of the conversation we ask the user a question and wait for the reply
+    convo.ask("What would you like your reminder to be? etc 'I have an appointment tomorrow from 10 to 11 AM' the information will be added automatically", (payload, convo) => {
+      datetime = chrono.parseDate(payload.message.text) // Take what the user said and parse it using Chrono, a natural date parsing package
+      var params = {
+        write_key: config.bucket.write_key,
+        type_slug: 'reminders',
+        title: payload.message.text,
+        metafields: [
+         {
+           key: 'date',
+           type: 'text',
+           value: datetime
+         }
+        ]
+      } // We build the params object to be used with the CosmicJS Object addition
+      Cosmic.addObject(config, params, function(error, response){ // We take the CosmicJS package and insert our new object using the params we created earlier
+        if(!error){
+          eventEmitter.emit('new', response.object.slug, datetime) // We are sending a NodeJS event emitter passing the slug from the return and the datetime we created earlier
+          convo.say("reminder added correctly :)")
+          convo.end()
+        } else {
+          convo.say("there seems to be a problem. . .")
+          convo.end()
+        }
+      })
+    })
+  })
+})
