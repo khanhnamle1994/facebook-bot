@@ -153,3 +153,20 @@ bot.hear('help', (payload, chat) => {
   chat.say("'setup': add your bucket info such as slug and write key")
   chat.say("'config': lists your current bucket config")
 })
+
+// Playing with event emitters
+eventEmitter.on('new', function(itemSlug, time) {
+  schedule.scheduleJob(time, function(){
+    Cosmic.getObject(config, {slug: itemSlug}, function(error, response){
+      if(response.object.metadata.date == new Date(time).toISOString()){
+        bot.say(BotUserId, response.object.title)
+        console.log('firing reminder')
+      } else {
+        eventEmitter.emit('new', response.object.slug, response.object.metafield.date.value)
+        console.log('times do not match checking again at '+response.object.metadata.date)
+      }
+    })
+  })
+})
+
+bot.start()
