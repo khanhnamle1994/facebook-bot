@@ -33,3 +33,10 @@ app.get('/webhook/', function(req, res) {
 app.listen(app.get('port'), function(){
   console.log('Started on port', app.get('port'))
 })
+
+// This creates an object that talks to the bootbot npm package. This allows us to use webhooks and such things
+const bot = new BootBot({
+  accessToken: process.env.ACCESS_TOKEN,
+  verifyToken: process.env.VERIFY_TOKEN,
+  appSecret: process.env.APP_SECRET
+})
