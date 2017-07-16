@@ -43,3 +43,14 @@ const bot = new BootBot({
 
 // This shows you a nice little message before you decide to message the Facebook page
 bot.setGreetingText("Hello, I'm here to help you manage your tasks. Be sure to setup your bucket by typing 'Setup'. ")
+
+// Creates a get started button as a barrier to entry before you message the bot. It also checks if you have setup the bucket config
+// information yet. This is done later on by calling a certain command. You can also modify it so it is hardwired with your bucket
+// information.
+bot.setGetStartedButton((payload, chat) => {
+  if(config.bucket === undefined){
+    chat.say('Hello my name is Note Buddy and I can help you keep track of your thoughts')
+    chat.say("It seems like you have not setup your bucket settings yet. That has to be done before you can do anything else. Make sure to type 'setup'")
+  }
+  BotUserId = payload.sender.id
+});
