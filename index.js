@@ -40,3 +40,6 @@ const bot = new BootBot({
   verifyToken: process.env.VERIFY_TOKEN,
   appSecret: process.env.APP_SECRET
 })
+
+// This shows you a nice little message before you decide to message the Facebook page
+bot.setGreetingText("Hello, I'm here to help you manage your tasks. Be sure to setup your bucket by typing 'Setup'. ")
