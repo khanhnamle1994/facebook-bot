@@ -54,3 +54,49 @@ bot.setGetStartedButton((payload, chat) => {
   }
   BotUserId = payload.sender.id
 });
+
+// This initiates a function that listens for specific keywords. Here we are listening for 'setup' but it can be changed to be
+// anything. It can even accept regex statements
+bot.hear('setup', (payload, chat) => {
+  // Creates a function that can be called later to start the chain
+  const getBucketSlug = (convo) => {
+    convo.ask("What's your Bucket's slug?", (payload, convo) => {
+      var slug = payload.message.text;
+      // Takes what you send as an answer and sets that to a slug value that can be called in this instance of the conversation.
+      // If you started another conversation later in a separate instance this value would not be remembered.
+      convo.set('slug', slug)
+      convo.say("setting slug as "+slug).then(() => getBucketReadKey(convo));
+    })
+  }
+  const getBucketReadKey = (convo) => {
+    convo.ask("What's your Bucket's read key?", (payload, convo) => {
+      var readkey = payload.message.text;
+      convo.set('read_key', readkey)
+      convo.say('setting read_key as '+readkey).then(() => getBucketWriteKey(convo))
+    })
+  }
+  const getBucketWriteKey = (convo) => {
+    convo.ask("What's your Bucket's write key?", (payload, convo) => {
+      var writekey = payload.message.text
+      convo.set('write_key', writekey)
+      convo.say('setting write_key as '+writekey).then(() => finishing(convo))
+    })
+  }
+  const finishing = (convo) => {
+    var newConfigInfo = {
+      slug: convo.get('slug'),
+      read_key: convo.get('read_key'),
+      write_key: convo.get('write_key')
+    }
+    // Now we are starting to fisnish up the setup process with our final touches. First thing we have to do is get all of the
+    // information together. Right here we are grabbing all of the info by calling 'convo.get'. Then we add it to the config
+    // object declared earlier.
+    config.bucket = newConfigInfo
+    convo.say('All set :)')
+    convo.end();
+  }
+
+  chat.conversation((convo) => {
+    getBucketSlug(convo) // This is where everything starts. We start the conversation and start passing the convo value around.
+  })
+})
