@@ -100,3 +100,10 @@ bot.hear('setup', (payload, chat) => {
     getBucketSlug(convo) // This is where everything starts. We start the conversation and start passing the convo value around.
   })
 })
+
+// Utilize the 'bot.hear' method and be friendly to the user
+bot.hear(['hello', 'hey', 'sup'], (payload, chat)=>{
+  chat.getUserProfile().then((user) => {
+    chat.say(`Hey ${user.first_name}, How are you today?`)
+  })
+})
