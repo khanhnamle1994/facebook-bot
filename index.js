@@ -145,3 +145,11 @@ bot.hear('create', (payload, chat) => {
     })
   })
 })
+
+// Return a series of messages telling you what you can and can't do with the bot
+bot.hear('help', (payload, chat) => {
+  chat.say('Here are the following commands for use.')
+  chat.say("'create': add a new reminder")
+  chat.say("'setup': add your bucket info such as slug and write key")
+  chat.say("'config': lists your current bucket config")
+})
